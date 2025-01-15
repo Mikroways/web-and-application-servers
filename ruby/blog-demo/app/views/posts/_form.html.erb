@@ -1,0 +1,33 @@
+
+<%= form_with(model: @post, data:{turbo:false}, local: true) do |f| %>
+<div class="form_box title_box">
+    <%= f.label :title %>
+    <%= f.text_field :title, placeholder:"Your topic..." %>
+  </div>
+ 
+  <div class="form_box content_box">
+    <%= f.label :content %>
+    <%= f.text_area :content, placeholder:"Tell us more..." %>
+  </div>
+
+  <div class="form_box thumnail">
+    <%= f.label :thumbnail %>
+    <%= f.file_field :thumbnail %>
+  </div>
+
+  <div class="form_box">
+    <div class="col-sm-8 col-sm-offset-2">
+      <%= f.label :Category, "Pick category/categories" %><br />
+      <div class="cat-opt-flex">
+      <%= f.collection_check_boxes :category_ids, Category.all, :id, :name do |cb| %>
+        <% cb.label(class: "checkbox-inline input_checkbox" ) {cb.check_box(class: "checkbox" ) + cb.text } %>
+          <% end %>
+        </div>
+    </div>
+  </div>
+
+
+  <div class="form_box button">
+  <%= f.submit(@post.new_record? ? "Publish Now" : "Update Now" , class:"publish_btn") %>
+</div>
+  <% end %>

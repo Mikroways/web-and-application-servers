@@ -1,0 +1,52 @@
+@import "bootstrap";
+
+:root{
+    --primary-color: #3131ad;
+    --dark-color:#000;
+    --gray-color:#808080;
+    --light-color:#fff;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+}
+
+a{
+    text-decoration: none;
+}
+li{
+    list-style: none;
+}
+
+input,button{
+    border: none;
+    outline: none;
+}
+
+.app-con{
+    padding: 2rem 0;
+    width: 95%;
+    max-width: 1920px !important;
+    margin: 0 auto;
+    flex: 1; 
+}
+
+
+  .footer {
+    text-align: center;
+    background: var(--primary-color);
+    color: var(--light-color);
+    width: 100%;
+    padding: 1rem;
+  }
+
+
+ 
