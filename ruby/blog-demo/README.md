@@ -1,32 +1,170 @@
-# README
+# Aplicación de demo ruby on rails 7
 
+Esta aplicación es un blog creado inicialmente [como demo de desarrollo con rails](https://github.com/samojeyinka/isharp/).
+A nosotros nos sirve para jugar con ciertas configuraciones que son necesarias
+para trabajar en desarrollo y difieren de producción.
 
-![tmb](https://github.com/samojeyinka/isharp/assets/131479901/f610acad-6cc8-495f-b895-fefc2851d0b8)
+Como usamos rails, es el propio framework el que propone usar
+[puma](https://puma.io/), tanto para desarrollo como producción.
 
-![su](https://github.com/samojeyinka/isharp/assets/131479901/21f422dd-a90d-47f2-a948-0ff5b415c762)
+## Instalación de la aplicación
 
-![pv](https://github.com/samojeyinka/isharp/assets/131479901/ed8dc3e4-3856-4e44-bc66-c65614f83d23)
+Primero procedemos a instalar las dependencias:
 
-![appp](https://github.com/samojeyinka/isharp/assets/131479901/ad9e508d-7a93-4a93-99d0-550c38bc84bc)
+```bash
+cd /vagrant/ruby/blog-demo
+bundle
+```
 
+Al fnalizar, probamos la aplicación en desarrollo:
 
+```bash
+bundle exec rails server -b 0.0.0.0
+```
 
-## 🚀 Isharp - A Ruby on Rails Blogging Platform 🚀
+> **Nota 1:** el comando `bundle exec` lo usamos para ejecutar comandos ruby en
+> el contexto de bundle (el manejador de paquetes).
 
-Welcome to [Isharp], a lightweight and feature-rich blogging platform built on Ruby on Rails. This project allows users to easily sign up and sign in, granting authenticated users the power to create, edit, and manage their own posts and categories.
+> **Nota 2:** la opción -b es para usar una ip diferente de 127.0.0.1 para
+> desarrollo, dado que estamos corriendo en el contexto de vagrant.
 
-## ✨ Key Features:
+Al hacer esto, accedemos a la ip que se expone: `http//IP-VM:3000`
 
-**User Authentication:** Seamlessly sign up and sign in to unlock the full potential of [Isharp]. Authenticated users have exclusive access to content creation and customization.
+> Podes ver la ip usando `ip -br add ls`
 
-**Content Creation:** Express yourself through compelling posts. Authenticated users can create, edit, and delete their own posts, ensuring complete control over their content.
+Seguro verás un error: **ActiveRecord::PendingMigrationError**. Esto se debe a
+que la aplicación espera tener tablas creadas que no existen. Procedemos
+entonces a inicializar la base de datos y tablas:
 
-**Category Management:** Organize your content with custom categories. Authenticated users with at least one post in a category can delete or edit it, providing a flexible and personalized categorization experience.
+```bash
+bundle exec rails db:create db:migrate
+```
 
-**Account Control:** Manage your profile with ease. Authenticated users can delete their accounts when needed, putting control over personal data in the hands of the user.
+Listo! Probamos nuevamente. Si funciona, procedé a:
 
-# 📝 Usage:
+* Registrarte
+* Crear un post y deslogueate
 
-Clone the repository.
-Set up your Ruby on Rails environment.
-Run migrations and start the server.
+Analizar dónde se crean las imágenes de un post o del perfil del usuario.
+
+## Ambiente productivo
+
+Ahora, veremos cómo cambia iniciar el servicio en producción. Los proyectos ruby
+in rails utilizan:
+
+* La variable de ambiente `RAILS_ENV` con el valor **production** para cambiar
+  a este modo de operación.
+* Algunos comandos soportan especificar el ambiente como argumento.
+
+Veamos algunos ejemplos. El primer paso es iniciar el webserver:
+
+```bash
+bundle exec rails server -e producion
+# o lo que es igual
+# RAILS_ENV=production bundle exec rails server
+```
+
+Esto devolverá un nuevo error indicando:
+
+```
+`secret_key_base=': Missing `secret_key_base` for 'production' environment, set
+this string with `bin/rails credentials:edit`
+```
+
+Esto se debe a que el framework utiliza este **secret key base** para firmar
+cookies. El valor se setea en un archivo de configuración como explica el propio
+error o seteando la variable de ambiente llamada `SECRET_KEY_BASE`.
+
+Generamos entonces el secret key base con el comando:
+
+```bash
+bundle exec rails secret
+```
+
+> Copiar el valor para usarlo en el siguiente ejemplo
+
+Probamos primero iniciando el servicio de puma en modo produccíón con la
+variable de ambiente:
+
+```bash
+SECRET_KEY_BASE=xxxx bundle exec rails server -e producion
+# o lo que es igual
+# SECRET_KEY_BASE=xxxx RAILS_ENV=production bundle exec rails server
+```
+
+En contraposición a esta solución, podemos usar:
+
+```bash
+bundle exec rails credentials:edit
+```
+
+> Veremos que al abrir ya inicializa justamente la variable `secret_key_base`
+
+El uso de credenciales es conveniente, sólo debe tenerse en cuenta que al
+usarlo, se está generando un archivo de **vital importancia**: `config/master.key`.
+Este archivo no se versiona, pero es **necesario para el funcionamiento**, dado
+que se usa para descifrar las credenciales editadas con el comando anterior.
+Podemos probar:
+
+```bash
+bundle exec rails credentials:show
+cat config/credentials.yml.enc
+```
+
+> Veremos que el comando rails muestra en texto claro el contendio cifrado que
+> vemos con `cat`.
+
+La diferencia entre una forma de hacerlo u otra está en que cualquier comando
+que se corra en el ambiente de producción necesita este valor. Entonces, a veces
+es más cómodo usar un archivo que una variable. En **ambientes de contenedores,
+siempre la variable es conveniente**.
+
+### Probamos la aplicación
+
+Ya iniciada ahora nuestra aplicación, probamos acceder: `http//IP-VM:3000`.
+
+> Vemos que no se necesita la opción `-b` porque en el ambiente productivo, puma
+> sirve contenido en todas las IPs, no sólo en 127.0.0.1.
+
+Veremos un error, pero esta vez la página mostrará un mensaje de error 500 que
+poco nos dice. Sin embargo, los logs de puma/rails dirán:
+
+```
+ActionView::Template::Error (Could not find table 'posts'):
+```
+
+El problema es que, para producción se usa otra base de datos. La creamos:
+
+```bash
+RAILS_ENV=production bundle exec rails db:create db:migrate
+```
+
+Probamos nuevamente, y....
+
+### Configurando a rails para producción
+
+En pos de mejorar la eficiencia de nuesto sitio, no querremos que puma, un
+application server desarrollado en ruby, sirva contenido estático. Para ello,
+mucho mejor usar un webserver como Caddy, nginx o apache. Procedemos entonces a
+modificar la configuración de `config/environments/production.rb`:
+
+```ruby
+ config.public_file_server.enabled = false
+```
+
+Descomentar la línea mencionada, de forma de no servir archivos en la carpeta
+`public/`. Reiniciamos puma y volvemos a probar.
+
+> Recordá que tenés que cargar la página evitando que la caché muestre
+> resultados. Podés ver errores en los logs de puma porque el navegador solicita
+> estilos y assets que no sirve. Si el navegador aun no muestra cambios, podés
+> usar: `Ctrl+F5` o abrir en modo incógnito.
+
+Probamos con Caddy:
+
+```bash
+cd /vagrant/ruby
+caddy run
+```
+
+Probar ahora en: `http//IP-VM:3000`.

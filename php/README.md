@@ -59,7 +59,7 @@ symfony local:server:start --listen-ip=0.0.0.0
 
 Acceder a la IP de nuestra máquina virtual: `http//IP-VM:8000`
 
-> Podes descibrir la ip usando `ip -br add ls`
+> Podes ver la ip usando `ip -br add ls`
 
 Al acceder sin realizar ninguna modificación en el código, ni habiendo corrido
 ningún comando, claro está que dará un error. Esto es porque no hay ninguna
