@@ -34,5 +34,7 @@ para que puedas probar sin conflictos porque ambos comparten el puerto 80 y 443.
 
 ## Ejemplos
 
-* [`php/`](./php): contiene un ejemplo de cómo configurar una aplicación symfony
+* [`php/`](./php): un ejemplo de cómo configurar una aplicación symfony
   con el appserver de php y algún web server.
+* [`ruby/`](./ruby): un ejemplo de proyecto ruby on rails con el appserver puma
+  y algún web server.

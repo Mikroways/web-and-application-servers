@@ -2,4 +2,5 @@
 	root * symfony-demo-app/public
 	php_fastcgi http://localhost:9001
   file_server
+  log
 }
