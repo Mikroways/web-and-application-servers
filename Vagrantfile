@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
     su - vagrant -c " git config --global advice.detachedHead false"
     su - vagrant -c "[ -d ~/.asdf ] || git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.15.0"
     su - vagrant -c "grep -q asdf.sh ~/.bashrc || echo -e '. \"\\$HOME/.asdf/asdf.sh\"\n. \"\\$HOME/.asdf/completions/asdf.bash\"' >> .bashrc"
-    su - vagrant -c ".  ~/.asdf/asdf.sh && for i in direnv java ruby python php caddy; do echo Install \\$i plugin && asdf plugin add \\$i; done"
+    su - vagrant -c ".  ~/.asdf/asdf.sh && for i in direnv java ruby python php caddy nodejs; do echo Install \\$i plugin && asdf plugin add \\$i; done"
     su - vagrant -c ".  ~/.asdf/asdf.sh && echo Install latest direnv plugin && asdf install direnv latest && asdf global direnv latest && asdf direnv setup --shell bash --version latest"
     su - vagrant -c ".  ~/.asdf/asdf.sh && echo Allow direnv work directories && cd /vagrant && direnv allow && COMPOSER_HOME=\"\" asdf direnv install"
   SHELL
