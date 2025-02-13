@@ -1,5 +1,5 @@
 :2026 {
-	root * blog_demo/public
+	root * blog-demo/public
 	reverse_proxy http://localhost:3000
   file_server
   log

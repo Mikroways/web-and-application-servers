@@ -59,7 +59,7 @@ in rails utilizan:
 Veamos algunos ejemplos. El primer paso es iniciar el webserver:
 
 ```bash
-bundle exec rails server -e producion
+bundle exec rails server -e production
 # o lo que es igual
 # RAILS_ENV=production bundle exec rails server
 ```
@@ -87,7 +87,7 @@ Probamos primero iniciando el servicio de puma en modo produccíón con la
 variable de ambiente:
 
 ```bash
-SECRET_KEY_BASE=xxxx bundle exec rails server -e producion
+SECRET_KEY_BASE=xxxx bundle exec rails server -e production
 # o lo que es igual
 # SECRET_KEY_BASE=xxxx RAILS_ENV=production bundle exec rails server
 ```
