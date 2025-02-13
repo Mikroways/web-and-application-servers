@@ -1,6 +1,10 @@
 :2026 {
-	root * blog-demo/public
-	reverse_proxy http://localhost:3000
-  file_server
-  log
+    root * blog-demo/public
+    handle /assets/* {
+        file_server
+    }
+    handle {
+        reverse_proxy http://localhost:3000
+    }
+    log
 }

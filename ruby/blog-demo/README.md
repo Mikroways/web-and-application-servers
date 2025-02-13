@@ -175,4 +175,4 @@ cd /vagrant/ruby
 caddy run
 ```
 
-Probar ahora en: `http//IP-VM:3000`.
+Probar ahora en: `http//IP-VM:2026`.
