@@ -126,8 +126,16 @@ Ya iniciada ahora nuestra aplicación, probamos acceder: `http//IP-VM:3000`.
 > Vemos que no se necesita la opción `-b` porque en el ambiente productivo, puma
 > sirve contenido en todas las IPs, no sólo en 127.0.0.1.
 
-Veremos un error, pero esta vez la página mostrará un mensaje de error 500 que
-poco nos dice. Sin embargo, los logs de puma/rails dirán:
+Veremos un error, porque Rails espera que los assets estén compilados cuando
+corre el ambiente de producción. Los compilamos:
+
+```bash
+RAILS_ENV=production bundle exec rails assets:precompile
+```
+
+Al acceder a `http//IP-VM:3000`, nuevamente veremos un error, pero esta vez la
+página mostrará un mensaje de error 500 que poco nos dice. Sin embargo, los logs
+de puma/rails dirán:
 
 ```
 ActionView::Template::Error (Could not find table 'posts'):
