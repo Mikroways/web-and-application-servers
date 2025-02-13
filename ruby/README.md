@@ -59,7 +59,7 @@ in rails utilizan:
 Veamos algunos ejemplos. El primer paso es iniciar el webserver:
 
 ```bash
-bundle exec rails server -e producion
+bundle exec rails server -e production
 # o lo que es igual
 # RAILS_ENV=production bundle exec rails server
 ```
@@ -87,7 +87,7 @@ Probamos primero iniciando el servicio de puma en modo produccíón con la
 variable de ambiente:
 
 ```bash
-SECRET_KEY_BASE=xxxx bundle exec rails server -e producion
+SECRET_KEY_BASE=xxxx bundle exec rails server -e production
 # o lo que es igual
 # SECRET_KEY_BASE=xxxx RAILS_ENV=production bundle exec rails server
 ```
@@ -126,8 +126,16 @@ Ya iniciada ahora nuestra aplicación, probamos acceder: `http//IP-VM:3000`.
 > Vemos que no se necesita la opción `-b` porque en el ambiente productivo, puma
 > sirve contenido en todas las IPs, no sólo en 127.0.0.1.
 
-Veremos un error, pero esta vez la página mostrará un mensaje de error 500 que
-poco nos dice. Sin embargo, los logs de puma/rails dirán:
+Veremos un error, porque Rails espera que los assets estén compilados cuando
+corre el ambiente de producción. Los compilamos:
+
+```bash
+RAILS_ENV=production bundle exec rails assets:precompile
+```
+
+Al acceder a `http//IP-VM:3000`, nuevamente veremos un error, pero esta vez la
+página mostrará un mensaje de error 500 que poco nos dice. Sin embargo, los logs
+de puma/rails dirán:
 
 ```
 ActionView::Template::Error (Could not find table 'posts'):
@@ -167,4 +175,4 @@ cd /vagrant/ruby
 caddy run
 ```
 
-Probar ahora en: `http//IP-VM:3000`.
+Probar ahora en: `http//IP-VM:2026`.
